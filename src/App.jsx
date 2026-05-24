@@ -5,8 +5,6 @@ import Login from "./pages/LoginPage";
 import UpdateBooking from "./pages/admin/UpdateBooking";
 import ConfirmPayment from "./pages/admin/ConfirmPayment";
 import AdminDashboard from "./pages/admin/AdminDashboard";
-import AllBookingsPage from "./pages/admin/AllBookingsPage";
-import BookingDetailPage from "./pages/admin/BookingDetailPage";
 
 function App() {
   return (
@@ -60,8 +58,6 @@ function App() {
             element={<ConfirmPayment />}
           />
           <Route path="/admin" element={<AdminDashboard />} />
-          <Route path="/admin/bookings" element={<AllBookingsPage />} />
-          <Route path="/admin/bookings/:id" element={<BookingDetailPage />} />
         </Routes>
       </div>
     </Router>
