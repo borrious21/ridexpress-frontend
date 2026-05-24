@@ -2,6 +2,7 @@ import React from 'react';
 import { BrowserRouter as Router, Routes, Route, Link } from 'react-router-dom';
 import Signup from './pages/SignupPage';
 import Login from './pages/LoginPage';
+import MyBookings from './pages/user/MyBookings';
 import UpdateBooking from './pages/admin/UpdateBooking';
 import ConfirmPayment from './pages/admin/ConfirmPayment';
 
@@ -18,7 +19,8 @@ function App() {
                 <h1 className="text-3xl font-bold mb-4">RideXpress Dashboard</h1>
                 <p className="text-gray-600 mb-8">Admin routing setup successfully.</p>
 
-                <div className="flex gap-4">
+                <div className="flex gap-4 flex-wrap">
+
                   <Link to="/admin/bookings/edit/1" className="text-blue-600 hover:underline">
                     Demo Edit Booking
                   </Link>
@@ -34,6 +36,11 @@ function App() {
                   <Link to="/login" className="text-blue-600 hover:underline">
                     Login Page
                   </Link>
+
+                  <Link to="/my-bookings" className="text-blue-600 hover:underline">
+                    My Bookings
+                  </Link>
+
                 </div>
               </div>
             }
@@ -41,6 +48,8 @@ function App() {
 
           <Route path="/signup" element={<Signup />} />
           <Route path="/login" element={<Login />} />
+
+          <Route path="/my-bookings" element={<MyBookings />} />
 
           <Route path="/admin/bookings/edit/:id" element={<UpdateBooking />} />
           <Route path="/admin/bookings/:id/confirm-payment" element={<ConfirmPayment />} />
