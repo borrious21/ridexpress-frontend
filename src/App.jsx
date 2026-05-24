@@ -2,6 +2,7 @@ import React from 'react';
 import { BrowserRouter as Router, Routes, Route, Link } from 'react-router-dom';
 import Signup from './pages/SignupPage';
 import Login from './pages/LoginPage';
+import MyBookings from './pages/user/MyBookings';
 import UpdateBooking from './pages/admin/UpdateBooking';
 import ConfirmPayment from './pages/admin/ConfirmPayment';
 import AllBookings from './pages/admin/AllBookings';
@@ -42,12 +43,16 @@ function App() {
                       Log In Page
                     </Link>
                   </div>
+                  <Link to="/my-bookings" className="py-2.5 bg-gray-50 hover:bg-gray-100 text-gray-700 border border-gray-200 rounded-lg text-xs font-bold transition-all">
+                    My Bookings
+                  </Link>
                 </div>
               </div>
             </div>
           } />
           <Route path="/signup" element={<Signup />} />
           <Route path="/login" element={<Login />} />
+          <Route path="/my-bookings" element={<MyBookings />} />
           <Route path="/admin/bookings" element={<AllBookings />} />
           <Route path="/admin/bookings/:id" element={<BookingDetail />} />
           <Route path="/admin/bookings/edit/:id" element={<UpdateBooking />} />
