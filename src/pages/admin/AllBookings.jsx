@@ -114,7 +114,40 @@ const AllBookings = () => {
     }
   ];
 
+  import { getBookings } from '../../services/api';
+  // Import API service
+import { getBookings } from '../../services/api';
+
   useEffect(() => {
+    const fetchBookings = async () => {
+      try {
+        const data = await getBookings();
+        setBookings(data);
+      } catch (err) {
+        console.error(err);
+        setError('Could not load bookings from API. Using demo data.');
+        setBookings(demoBookings);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+    fetchBookings();
+  }, []);
+
+    const fetchBookings = async () => {
+      try {
+        const data = await getBookings();
+        setBookings(data);
+      } catch (err) {
+        console.error(err);
+        setError('Could not load bookings from API. Using demo data.');
+        setBookings(demoBookings);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+    fetchBookings();
+  }, []);
     const fetchBookings = async () => {
       try {
         const response = await fetch('/api/booking');
