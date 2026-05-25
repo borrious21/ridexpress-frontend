@@ -15,7 +15,7 @@ import {
   UserPlus,
   AlertCircle,
 } from "lucide-react";
-import api from "../lib/axios";
+import api from "../../api/api";
 
 const PROVINCES = [
   "Koshi",

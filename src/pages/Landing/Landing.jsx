@@ -2,10 +2,10 @@ import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import {
   Car, Shield, Clock, MapPin, Star, ChevronRight,
-  Phone, Mail, Facebook, Twitter, Instagram,
+  Phone, Mail, Globe, Share2, MessageCircle,
   CheckCircle, Zap, Users, Award
 } from 'lucide-react';
-import api from '../lib/axios';
+import api from '../../api/api';
 
 const VEHICLE_TYPES = ['All', 'Car', 'Bike', 'SUV', 'Van'];
 
@@ -400,7 +400,7 @@ export default function Landing() {
                 Nepal's trusted vehicle rental platform. Cars, bikes, SUVs and vans across 20+ cities.
               </p>
               <div className="flex gap-3">
-                {[Facebook, Twitter, Instagram].map((Icon, i) => (
+                {[Globe, Share2, MessageCircle].map((Icon, i) => (
                   <a key={i} href="#" className="w-8 h-8 bg-gray-800 rounded-lg flex items-center justify-center hover:bg-blue-600 transition-colors">
                     <Icon className="w-4 h-4" />
                   </a>
