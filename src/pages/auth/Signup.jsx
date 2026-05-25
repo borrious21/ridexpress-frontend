@@ -5,8 +5,7 @@ import {
   Home, MapPin, Map, Lock, Eye, EyeOff,
   CheckCircle, UserPlus, AlertCircle,
 } from 'lucide-react';
-
-const API_BASE = 'http://localhost:5000/api/auth';
+import api from '../lib/axios';
 
 const PROVINCES = [
   'Koshi', 'Madhesh', 'Bagmati', 'Gandaki',
@@ -89,15 +88,15 @@ function IconInput({ icon: Icon, error, className = '', ...props }) {
 
 function validate(f) {
   const e = {};
-  if (!f.name || f.name.length < 2)         e.name            = 'Full name is required.';
-  if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(f.email)) e.email   = 'Enter a valid email address.';
-  if (!/^[0-9]{10}$/.test(f.phone.replace(/\D/g, ''))) e.phone = 'Enter a valid 10-digit phone number.';
-  if (!f.street || f.street.length < 2)     e.street          = 'Street is required.';
-  if (!f.city   || f.city.length   < 2)     e.city            = 'City is required.';
-  if (!f.province)                           e.province        = 'Province is required.';
-  if (!f.password || f.password.length < 8) e.password        = 'Password must be at least 8 characters.';
-  if (f.password !== f.confirmPassword)      e.confirmPassword = 'Passwords do not match.';
-  if (!f.terms)                              e.terms           = 'You must accept the terms to continue.';
+  if (!f.name || f.name.length < 2)                          e.name            = 'Full name is required.';
+  if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(f.email))          e.email           = 'Enter a valid email address.';
+  if (!/^[0-9]{10}$/.test(f.phone.replace(/\D/g, '')))      e.phone           = 'Enter a valid 10-digit phone number.';
+  if (!f.street || f.street.length < 2)                      e.street          = 'Street is required.';
+  if (!f.city   || f.city.length   < 2)                      e.city            = 'City is required.';
+  if (!f.province)                                            e.province        = 'Province is required.';
+  if (!f.password || f.password.length < 8)                  e.password        = 'Password must be at least 8 characters.';
+  if (f.password !== f.confirmPassword)                       e.confirmPassword = 'Passwords do not match.';
+  if (!f.terms)                                               e.terms           = 'You must accept the terms to continue.';
   return e;
 }
 
@@ -129,30 +128,23 @@ export default function Signup() {
 
     setLoading(true);
     try {
-      const res = await fetch(`${API_BASE}/signup`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        credentials: 'include',
-        body: JSON.stringify({
-          name:            form.name,
-          email:           form.email,
-          phone:           form.phone.replace(/\D/g, ''),
-          password:        form.password,
-          confirmPassword: form.confirmPassword,
-          address: {
-            street:  form.street,
-            city:    form.city,
-            province: form.province,
-            country: 'Nepal',
-          },
-        }),
+      await api.post('/api/auth/signup', {
+        name:            form.name,
+        email:           form.email,
+        phone:           form.phone.replace(/\D/g, ''),
+        password:        form.password,
+        confirmPassword: form.confirmPassword,
+        address: {
+          street:   form.street,
+          city:     form.city,
+          province: form.province,
+          country:  'Nepal',
+        },
       });
-      const data = await res.json();
-      if (!res.ok) { setApiError(data.message || 'Something went wrong.'); setLoading(false); return; }
       setSuccess(true);
       setTimeout(() => navigate('/login'), 1800);
-    } catch {
-      setApiError('Unable to reach the server. Please check your connection.');
+    } catch (err) {
+      setApiError(err.response?.data?.message || 'Something went wrong.');
       setLoading(false);
     }
   };
@@ -160,7 +152,7 @@ export default function Signup() {
   return (
     <div className="min-h-screen bg-gray-50 pb-20">
 
-      {/* ── Top bar ── */}
+      {/* Top bar */}
       <div className="bg-white border-b border-gray-200 sticky top-0 z-20 shadow-sm">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
           <Link to="/" className="flex items-center text-gray-600 hover:text-blue-600 transition-colors font-medium">
@@ -173,11 +165,11 @@ export default function Signup() {
         </div>
       </div>
 
-      {/* ── Card ── */}
+      {/* Card */}
       <div className="max-w-2xl mx-auto px-4 sm:px-6 lg:px-8 pt-10">
         <div className="bg-white rounded-2xl shadow-xl border border-gray-100 overflow-hidden">
 
-          {/* Card header band */}
+          {/* Header band */}
           <div className="bg-blue-600 p-8 text-white text-center">
             <div className="mx-auto w-16 h-16 bg-blue-500 rounded-full flex items-center justify-center mb-4 border-4 border-blue-400 shadow-inner">
               <UserPlus className="w-8 h-8 text-white" />
@@ -194,7 +186,6 @@ export default function Signup() {
           {/* Form body */}
           <div className="px-6 py-8 sm:p-10 space-y-6">
 
-            {/* API error */}
             {apiError && (
               <div className="p-4 bg-red-50 border-l-4 border-red-500 text-red-700 rounded flex items-start gap-2">
                 <AlertCircle className="w-4 h-4 mt-0.5 flex-shrink-0" />
@@ -202,7 +193,6 @@ export default function Signup() {
               </div>
             )}
 
-            {/* Success */}
             {success && (
               <div className="p-4 bg-green-50 border-l-4 border-green-500 text-green-700 rounded flex items-center gap-2">
                 <CheckCircle className="w-5 h-5" />
@@ -212,54 +202,44 @@ export default function Signup() {
 
             <form onSubmit={handleSubmit} noValidate className="space-y-6">
 
-              {/* ── Personal info ── */}
+              {/* Personal info */}
               <div>
                 <p className="text-xs font-semibold uppercase tracking-widest text-gray-400 mb-4 pb-2 border-b border-gray-100">
                   Personal Information
                 </p>
                 <div className="space-y-4">
                   <Field label={<><User className="w-4 h-4 mr-1.5 text-gray-400" />Full Name</>} error={errors.name}>
-                    <IconInput
-                      icon={User} type="text" placeholder="Aayush Sharma"
-                      value={form.name} onChange={set('name')} error={errors.name}
-                    />
+                    <IconInput icon={User} type="text" placeholder="Aayush Sharma"
+                      value={form.name} onChange={set('name')} error={errors.name} />
                   </Field>
 
                   <Field label={<><Mail className="w-4 h-4 mr-1.5 text-gray-400" />Email Address</>} error={errors.email}>
-                    <IconInput
-                      icon={Mail} type="email" placeholder="you@example.com"
-                      value={form.email} onChange={set('email')} error={errors.email}
-                    />
+                    <IconInput icon={Mail} type="email" placeholder="you@example.com"
+                      value={form.email} onChange={set('email')} error={errors.email} />
                   </Field>
 
                   <Field label={<><Phone className="w-4 h-4 mr-1.5 text-gray-400" />Phone Number</>} error={errors.phone}>
-                    <IconInput
-                      icon={Phone} type="tel" placeholder="98XXXXXXXX"
-                      value={form.phone} onChange={set('phone')} error={errors.phone}
-                    />
+                    <IconInput icon={Phone} type="tel" placeholder="98XXXXXXXX"
+                      value={form.phone} onChange={set('phone')} error={errors.phone} />
                   </Field>
                 </div>
               </div>
 
-              {/* ── Address ── */}
+              {/* Address */}
               <div>
                 <p className="text-xs font-semibold uppercase tracking-widest text-gray-400 mb-4 pb-2 border-b border-gray-100">
                   Address
                 </p>
                 <div className="space-y-4">
                   <Field label={<><Home className="w-4 h-4 mr-1.5 text-gray-400" />Street</>} error={errors.street}>
-                    <IconInput
-                      icon={Home} placeholder="e.g. Putali Sadak"
-                      value={form.street} onChange={set('street')} error={errors.street}
-                    />
+                    <IconInput icon={Home} placeholder="e.g. Putali Sadak"
+                      value={form.street} onChange={set('street')} error={errors.street} />
                   </Field>
 
                   <div className="grid grid-cols-2 gap-4">
                     <Field label={<><MapPin className="w-4 h-4 mr-1.5 text-gray-400" />City</>} error={errors.city}>
-                      <IconInput
-                        icon={MapPin} placeholder="e.g. Dharan"
-                        value={form.city} onChange={set('city')} error={errors.city}
-                      />
+                      <IconInput icon={MapPin} placeholder="e.g. Kathmandu"
+                        value={form.city} onChange={set('city')} error={errors.city} />
                     </Field>
 
                     <Field label={<><Map className="w-4 h-4 mr-1.5 text-gray-400" />Province</>} error={errors.province}>
@@ -289,7 +269,7 @@ export default function Signup() {
                 </div>
               </div>
 
-              {/* ── Security ── */}
+              {/* Security */}
               <div>
                 <p className="text-xs font-semibold uppercase tracking-widest text-gray-400 mb-4 pb-2 border-b border-gray-100">
                   Security
@@ -310,11 +290,9 @@ export default function Signup() {
                             : 'border-gray-200 bg-gray-50 focus:border-blue-500 focus:ring-blue-200'
                         } focus:ring-2 focus:bg-white transition-all outline-none text-sm`}
                       />
-                      <button
-                        type="button" tabIndex={-1}
+                      <button type="button" tabIndex={-1}
                         onClick={() => setShowPass(v => !v)}
-                        className="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-400 hover:text-blue-600 transition-colors"
-                      >
+                        className="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-400 hover:text-blue-600 transition-colors">
                         {showPass ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
                       </button>
                     </div>
@@ -336,11 +314,9 @@ export default function Signup() {
                             : 'border-gray-200 bg-gray-50 focus:border-blue-500 focus:ring-blue-200'
                         } focus:ring-2 focus:bg-white transition-all outline-none text-sm`}
                       />
-                      <button
-                        type="button" tabIndex={-1}
+                      <button type="button" tabIndex={-1}
                         onClick={() => setShowConfirm(v => !v)}
-                        className="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-400 hover:text-blue-600 transition-colors"
-                      >
+                        className="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-400 hover:text-blue-600 transition-colors">
                         {showConfirm ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
                       </button>
                     </div>
@@ -348,7 +324,7 @@ export default function Signup() {
                 </div>
               </div>
 
-              {/* ── Terms ── */}
+              {/* Terms */}
               <div className="space-y-1">
                 <div className="flex items-start gap-3">
                   <input
@@ -370,7 +346,7 @@ export default function Signup() {
                 )}
               </div>
 
-              {/* ── Submit ── */}
+              {/* Submit */}
               <div className="pt-2">
                 <button
                   type="submit"

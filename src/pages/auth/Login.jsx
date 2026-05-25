@@ -1,13 +1,14 @@
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { ChevronLeft, Mail, Lock, Eye, EyeOff, LogIn, CheckCircle, AlertCircle } from 'lucide-react';
-
-const API_BASE = 'http://localhost:5000/api/auth';
+import api from '../lib/axios';
 
 function validate(form) {
   const errors = {};
-  if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(form.email)) errors.email = 'Enter a valid email address.';
-  if (!form.password || form.password.length < 8) errors.password = 'Password must be at least 8 characters.';
+  if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(form.email))
+    errors.email = 'Enter a valid email address.';
+  if (!form.password || form.password.length < 8)
+    errors.password = 'Password must be at least 8 characters.';
   return errors;
 }
 
@@ -32,18 +33,16 @@ export default function Login() {
 
     setLoading(true);
     try {
-      const res = await fetch(`${API_BASE}/login`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        credentials: 'include',
-        body: JSON.stringify({ email: form.email, password: form.password }),
+      const res = await api.post('/api/auth/login', {
+        email: form.email,
+        password: form.password,
       });
-      const data = await res.json();
-      if (!res.ok) { setApiError(data.message || 'Invalid email or password.'); setLoading(false); return; }
       setSuccess(true);
       setTimeout(() => navigate('/'), 1800);
-    } catch {
-      setApiError('Unable to reach the server. Please check your connection.');
+    } catch (err) {
+      setApiError(
+        err.response?.data?.message || 'Invalid email or password.'
+      );
       setLoading(false);
     }
   };
@@ -51,7 +50,7 @@ export default function Login() {
   return (
     <div className="min-h-screen bg-gray-50 pb-20">
 
-      {/* ── Top bar ── */}
+      {/* Top bar */}
       <div className="bg-white border-b border-gray-200 sticky top-0 z-20 shadow-sm">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
           <Link to="/" className="flex items-center text-gray-600 hover:text-blue-600 transition-colors font-medium">
@@ -64,7 +63,7 @@ export default function Login() {
         </div>
       </div>
 
-      {/* ── Card ── */}
+      {/* Card */}
       <div className="max-w-md mx-auto px-4 sm:px-6 lg:px-8 pt-10">
         <div className="bg-white rounded-2xl shadow-xl border border-gray-100 overflow-hidden">
 
@@ -137,10 +136,7 @@ export default function Login() {
                     <Lock className="w-4 h-4 mr-1.5 text-gray-400" />
                     Password
                   </label>
-                  <Link
-                    to="/forgot-password"
-                    className="text-xs text-blue-600 font-medium hover:underline"
-                  >
+                  <Link to="/forgot-password" className="text-xs text-blue-600 font-medium hover:underline">
                     Forgot password?
                   </Link>
                 </div>
